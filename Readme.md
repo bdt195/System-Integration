@@ -8,4 +8,4 @@ Hệ thống giáo dục được tích hợp dựa trên 3 module nhỏ (open s
 * Quản lý sinh viên
 * Quản lý môn học
 
-## Giới thiệu 
+## Hướng thực hiện
