@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+</head>
+<body>
+
+<div class="container col-xs-6">
+    <div class="form-group">
+      <form  id = 'form'>
+          <div class='row'>
+              <div class ='col-xs-6 form-group'>
+                <label>First name *</label>
+                <input class="form-control" type="text" name='fname'  id = 'fname'>
+              </div>
+              <div class ='col-xs-6 form-group'>
+                <label>Last name *</label>
+                <input class="form-control" type="text" name='lname'  id = 'lname'>
+              </div>
+          </div>
+
+            <div class='row'>
+              <div class ='col-xs-4 form-group'>
+                <label>Roll number *</label>
+                <input class="form-control" type="number" name='roll'  id = 'roll'>
+              </div>
+              <div class ='col-xs-4 form-group'>
+                <label>Branch *</label>
+                <select name="branch" id="branch" class="form-control">
+                </select>
+              </div>
+              <div class ='col-xs-4 form-group'>
+                <label>Year *</label>
+                <input class="form-control" type="number" name='year'  id = 'year'>
+              </div>
+          </div>
+
+
+          <div class='row'>
+              <div class ='col-xs-9 form-group'>
+                <label>Email *</label>
+                <input class="form-control" type="email" name='email'  id = 'email'>
+              </div>
+              <div class ='col-xs-3 form-group'>
+                <label>Category *</label>
+                <select name="category" id="category" class="form-control">
+                </select>
+              </div>
+          </div>
+
+        <button type ='button' class = 'btn btn-info  responsive-width center-block' id = 'btn'>Submit</button>
+        <hr>
+         <ul class="nav navbar-nav">
+            <li><a href="http://localhost:8081/login">Back</a></li>
+        </ul>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+<script>
+    function post_request(router, data, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+    function get_request(router, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "GET",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+</script>
+
+<script>
+$( document ).ready(function() {
+        get_request('lms/regisinfo', function(response){
+            obj = JSON.parse(response)
+            console.log(obj)
+            branch = obj.branch
+            category = obj.stu_category
+            console.log(branch[0].id)
+
+            for (let i=0;i<branch.length;i++){
+                $('#branch').append($('<option></option>').val(branch[i].id).html(branch[i].branch));
+            }
+
+            for (let i=0;i<category.length;i++){
+                $('#category').append($('<option></option>').val(category[i].cat_id).html(category[i].category));
+            }
+            
+        })
+
+})
+
+</script>
+
+<script>
+$('#btn').click(function(){
+    result = {
+        fname : $('#fname').val(),
+        lname : $('#lname').val(),
+        roll : $('#roll').val(),
+        branch : $('#branch').val(),
+        year : $('#year').val(),
+        email : $('#email').val(),
+        category : $('#category').val(),
+    }
+    console.log(result)
+    post_request('lms/stu-registration', result, function(response){
+        console.log(response)
+        window.location.replace('http://localhost:8081/login')    })
+})
+</script>

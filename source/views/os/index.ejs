@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Tich hop</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="http://localhost:8081/os/index">Open School</a></li>
+      <li><a href="http://localhost:8081/lms/index">LMS</a></li>
+      <li><a href="http://localhost:8081/cms/index">CMS</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="http://localhost:8081/logout" id = 'logout'><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+<div class="container">
+
+    <div class="row">
+    <div class="form-group col-sm-5 col-md-5 col-lg-5">
+                    <input class="form-control " type="text" id= 'personName' placeholder = 'Name'/>
+    </div>
+    <button type="button" class="btn btn-info  responsive-width center-block" style = 'display: inline-block' id = 'findBtn'>Find</button>
+    <button type="button" class="btn btn-info  responsive-width center-block" style = 'display: inline-block' id = 'createBtn'>Create</button>
+    
+
+
+    </div>
+    <hr>
+
+
+    <div class="form-group">
+                    <table class="table borderless" id = 'listPerson'>
+                        <thead>
+                            <tr>
+                                <th class = "col-xs-2 text-center">Name</th>
+                                <th class = "col-xs-2 text-center">Date of birth</th>
+                                <th class = "col-xs-2 text-center">City</th>
+                                <th class = "col-xs-2 text-center">Email</th>
+                                <th class = "col-xs-1 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+    </div>
+
+
+
+</div>
+
+</body>
+</html>
+
+
+<script>
+    function post_request(router, data, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+    function get_request(router, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "GET",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+</script>
+
+<script>
+    $( document ).ready(function() {
+        get_request('os/student/list', function(response){
+        obj = JSON.parse(response)
+        obj = obj.list
+        console.log(obj)
+        // console.log(obj[0].first_name + ' ' + obj[0].last_name)
+        // console.log(obj[0].date_of_birth)
+        // console.log(obj[0].city)
+        // console.log(obj[0].email)
+        genTable(obj)
+
+        })
+
+    })
+
+
+    function genTable(data){
+        for(let i=0;i< data.length;i++){
+            $("#listPerson").find('tbody')
+            .append($('<tr>')
+                .attr({class: 'text-center'})
+                .append(
+                    $('<td>')
+                    .text(data[i].first_name + data[i].last_name)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].date_of_birth)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].city)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].email)
+                )
+                .append(
+                    $('<div>')
+                    .attr({class: 'row'})
+                    .append(
+                        $('<td>')
+                        .append(
+                            $('<button>')
+                            .attr({type: 'button' ,style: 'display: inline-block; background-color: red' ,class: 'btn btn-info  responsive-width center-block' ,id: 'del'+ i})
+                            .text('Delete')
+                        )
+                        .append(
+                            $('<button>')
+                            .attr({type: 'button' ,style: 'display: inline-block' ,class: 'btn btn-info  responsive-width center-block' ,id: 'edit'+ i})
+                            .text('Edit')
+                        )
+                    )
+                )
+            );
+
+            $('#del'+i).click(function(){
+                console.log(data[i].id)
+                id = data[i].id
+                data = {}
+                post_request('os/student/delete/' + id, data, function(){
+                    location.reload()
+                })
+            })
+
+            $('#edit'+i).click(function(){
+                console.log(data[i].id)
+                id = data[i].id
+                window.location.replace('http://localhost:8081/os/student/edit/' + id)
+            })
+        }
+
+    }
+</script>
+
+<script>
+$('#findBtn').click(function(){
+    name = $('#personName').val()
+    if(name=='') $('#personName').focus()
+    else{
+        get_request('os/student/list?name=' + name, function(response){
+            obj = JSON.parse(response)
+            obj = obj.list
+            console.log(obj)
+            $("#listPerson").find('tbody').html('')
+            genTable(obj)
+        })
+    } 
+})
+
+$('#createBtn').click(function(){
+    window.location.replace('http://localhost:8081/os/student/create')
+})
+
+</script>

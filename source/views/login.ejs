@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+</head>
+<body>
+<div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3">Tích hợp hệ thống</h1>
+          <p>Giảng viên: PGS.TS. Nguyễn Ngọc Hóa</p>
+          
+        </div>
+      </div>
+
+<div class="container">
+
+    <div class="row">
+    <form>
+    <div class="form-group col-sm-5 col-md-5 col-lg-5">
+                    <input class="form-control " type="text" id= 'user' placeholder = 'Username'/>
+    </div>
+    <div class="form-group col-sm-5 col-md-5 col-lg-5">
+                    <input class="form-control " type="password" id= 'pass' placeholder = 'Password'/>
+    </div>
+    <button type="button" class="btn btn-info  responsive-width center-block" style = 'display: inline-block' id = 'btn'>Log in</button>
+    <label id = 'msg'></label>
+    <hr>
+    <div class='text-center'>
+    <a href="http://localhost:8081/lms/stu-registration">Student registration form</a>
+    </form>
+
+
+
+</div>
+
+</body>
+</html>
+
+
+<script>
+    function post_request(router, data, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+    function get_request(router, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "GET",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+</script>
+
+
+<script>
+$('#btn').click(function(){
+    data = {}
+    data.user = $('#user').val()
+    data.pass = $('#pass').val()
+    console.log(data)
+    post_request('login', data, function(response){
+        if (response.success == true){
+            window.location.replace('http://localhost:8081/os/index')
+        }
+        else {
+            $('#msg').text('username or password wrong!')
+        }
+    })
+})
+
+</script>

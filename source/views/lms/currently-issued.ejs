@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Tich hop</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="http://localhost:8081/os/index">Open School</a></li>
+      <li><a href="http://localhost:8081/lms/index">LMS</a></li>
+      <li><a href="http://localhost:8081/cms/index">CMS</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="http://localhost:8081/logout" id = 'logout'><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<ul class="nav navbar-nav">
+      <li><a href="http://localhost:8081/lms/student-for-approval">Student approval</a></li>
+      <li><a href="http://localhost:8081/lms/registered-students">All Student registered</a></li>
+      <li><a href="http://localhost:8081/lms/all-book">All book in library</a></li>
+      <li><a href="http://localhost:8081/lms/add-book">Add Book</a></li>
+      <li><a href="http://localhost:8081/lms/issue-return">Issue/Return book</a></li>
+      <li><a href="http://localhost:8081/lms/currently-issued">All book currently issued</a></li>
+  </ul>
+
+<div class="container">
+    <div class="form-group">
+                    <table class="table borderless" id = 'listPerson'>
+                        <thead>
+                            <tr>
+                                <th class = "col-xs-1 text-center">Log ID</th>
+                                <th class = "col-xs-1 text-center">Book Issue ID</th>
+                                <th class = "col-xs-7 text-center">Book Name</th>
+                                <th class = "col-xs-1 text-center">Student ID</th>
+                                <th class = "col-xs-1 text-center">Student Name</th>
+                                <th class = "col-xs-1 text-center">Issued On</th>
+                                <th class = "col-xs-1 text-center">Return Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+<script>
+    function post_request(router, data, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                dataType: "json",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+    function get_request(router, callback){
+        $.ajax({
+                url: 'http://localhost:8081/' + router,
+                type: "GET",
+                success: function (response) {
+                    callback(response)
+                }
+        });
+    }
+
+</script>
+
+<script>
+$( document ).ready(function() {
+        get_request('lms/issue-log', function(response){
+            obj = JSON.parse(response)
+            console.log(obj)
+            genTable(obj)
+
+           
+        })
+
+})
+
+</script>
+
+
+<script>
+function genTable(data){
+        for(let i=0;i< data.length;i++){
+            $("#listPerson").find('tbody')
+            .append($('<tr>')
+                .attr({class: 'text-center'})
+                .append(
+                    $('<td>')
+                    .text(data[i].id)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].book_issue_id)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].book_name)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].student_id)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].student_name)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].issued_at)
+                )
+                .append(
+                    $('<td>')
+                    .text(data[i].return_at)
+                )
+            );
+    }
+}
+</script>
